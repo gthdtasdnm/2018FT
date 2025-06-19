@@ -1,8 +1,12 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SchwarzerPeterAutomaton {
+
+
 
     private abstract class State{
         abstract void entry();
@@ -17,12 +21,15 @@ public class SchwarzerPeterAutomaton {
 
         @Override
         void entry() {
+            for(Player p:game){
+                notReady.add(p);
+            }
             System.out.println("Paare Finden");
+            removeAllPairs();
         }
 
         @Override
         void discard(Player p, Card x, Card y) {
-            if(!(validPair(p,x,y))){return;}
             System.out.println("Pärchen abgeworfen");
             p.removeCard(x);
             p.removeCard(y);
@@ -37,11 +44,10 @@ public class SchwarzerPeterAutomaton {
         @Override
         void ready(Player p) {
             setReady(p);
+            System.out.println(p + " ist bereit");
             if(allReady()){
                 System.out.println("Jeder ist bereit");
                 setState(KarteZiehen);
-            }else{
-                setState(this);
             }
         }
 
@@ -66,6 +72,7 @@ public class SchwarzerPeterAutomaton {
                 setState(Spielende);
                 return;
             }
+
         }
 
         @Override
@@ -95,21 +102,17 @@ public class SchwarzerPeterAutomaton {
                 removeIfEmpty(p);
                 return;
             }
+            Player left = getLeftNeighbor(p);
+            card = left.removeRandomCard();
 
-            try {
-                Player left = getLeftNeighbor(p);
-                card = left.removeRandomCard();
+            System.out.println(p.getName() + " zieht Karte von " + left.getName());
+            System.out.println(card);
 
-                System.out.println(p.getName() + " zieht Karte von " + left.getName());
+            // Check nach dem Ziehen
+            removeIfEmpty(left);
+            removeIfEmpty(p);
+            setState(KarteGezogen);
 
-                // Check nach dem Ziehen
-                removeIfEmpty(left);
-                removeIfEmpty(p);
-                setState(KarteGezogen);
-
-            } catch (IllegalArgumentException e) {
-                System.out.println("Kein linker Nachbar mit Karten für " + p.getName());
-            }
         }
 
 
@@ -153,7 +156,13 @@ public class SchwarzerPeterAutomaton {
 
         @Override
         void entry() {
+
             System.out.println("Karte Gezogen");
+            for(Card c: game.head().getHand()){
+                matching(game.head(),c);
+            }
+            noMatch(game.head());
+
         }
 
         @Override
@@ -164,7 +173,6 @@ public class SchwarzerPeterAutomaton {
             if(!(game.head()==p)){return;}
             if(!(validMatchingCard(p,x))){return;}
             p.removeCard(x);
-            game.nextTurn();
             setState(KarteZiehen);
         }
 
@@ -183,18 +191,27 @@ public class SchwarzerPeterAutomaton {
         void select(Player p) {}
     };
 
-
-
-    private State state = PaareFinden;
-    private Card card;
-    private SchwarzerPeter game;
-    private List<Player> notReady = new ArrayList<>();
+    private final SchwarzerPeter game;
 
     public SchwarzerPeterAutomaton(SchwarzerPeter game){
         this.game = game;
+        init();
     }
 
+    public void init(){
+        state = setState(PaareFinden);
+    }
+    
+    private State state;
+
+    private Card card;
+
+    private List<Player> notReady = new ArrayList<>();
+
+
+
     private void setReady(Player p){
+
         notReady.remove(p);
     }
 
@@ -207,7 +224,9 @@ public class SchwarzerPeterAutomaton {
     }
 
     private void removeIfEmpty(Player p) {
-        game.removePlayer(p);
+        if(p.getHand().size()==0){
+            game.removePlayer(p);
+        }
     }
 
     private boolean validPair(Player p, Card x, Card y){
@@ -234,12 +253,47 @@ public class SchwarzerPeterAutomaton {
         return activePlayers.get(nextIndex);
     }
 
-    private void setState(State s) {
-        state = s;
-        state.entry();
+    private State setState(State s) {
+        if (this.state == s) return state; //keine Doppel-Initialisierung
+        this.state = s;
+        s.entry();
+        return s;
     }
 
     public boolean isFinished() {return state==Spielende;}
+
+    public void removeAllPairs() {
+        for (Player p : game) {
+            List<Card> hand = new ArrayList<>(p.getHand());
+            Set<Integer> usedIndices = new HashSet<>();
+
+            for (int i = 0; i < hand.size(); i++) {
+                if (usedIndices.contains(i)) continue;
+
+                Card c1 = hand.get(i);
+
+                for (int j = i + 1; j < hand.size(); j++) {
+                    if (usedIndices.contains(j)) continue;
+
+                    Card c2 = hand.get(j);
+
+                    if (c1.equals(c2)) {
+                        discard(p, c1, c2);
+                        usedIndices.add(i);
+                        usedIndices.add(j);
+                        break; // nächstes i
+                    }
+                }
+            }
+        }
+    }
+
+    public void nextTurn() {
+        game.nextTurn();
+    }
+
+
+
 
     public void entry(){state.entry();}
     void discard(Player p, Card x, Card y){state.discard(p,x,y);}

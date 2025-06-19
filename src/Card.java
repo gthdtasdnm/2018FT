@@ -45,8 +45,7 @@ public class Card {
 
         //Convert to Card, test equal
         Card c = (Card) obj;
-        return this.tierart == c.getTierart() &&
-               this.geschlecht == c.getGeschlecht();
+        return this.tierart == c.getTierart();
     }
 
     @Override

@@ -28,9 +28,11 @@ public class SchwarzerPeter implements Iterable<Player>{
         }
     }
 
+    private int currentPlayerIndex = 0;
 
     public Player head(){
-        return players.getFirst();
+
+        return players.get(currentPlayerIndex);
     }
 
     public List<Card> deck(){
@@ -39,7 +41,8 @@ public class SchwarzerPeter implements Iterable<Player>{
     }
 
     public void nextTurn(){
-        iterator().next();
+        if (players.isEmpty()) return;
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
 

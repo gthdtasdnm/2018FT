@@ -37,27 +37,15 @@ public class FullGameTest {
 
         // Spielverlauf
         int i = 1;
-        while (!automaton.isFinished() && i < 1000) {
+        while (!automaton.isFinished() && i < 100) {
             Player active = game.head();
-            automaton.select(active);
 
-
-            boolean matched = false;
-            for (Card c : active.getHand()) {
-                if (automaton.validMatchingCard(active, c)) {
-                    automaton.matching(active, c);
-                    matched = true;
-                    break;
-                }
-            }
-
-            if (!matched) {
-                automaton.noMatch(active);
-            }
 
             System.out.println("Runde: " + i + " | Spieler: " + active.getName());
             System.out.println(active.getHand());
+            automaton.select(active);
             i++;
+            automaton.nextTurn();
         }
 
         System.out.println("Spiel beendet nach " + i + " Runden.");

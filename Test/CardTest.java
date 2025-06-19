@@ -25,7 +25,7 @@ public class CardTest {
         Card c2 = new Card(Tierart.HUND, Geschlecht.MAENNLICH);
         Card c3 = new Card(Tierart.KATZE, Geschlecht.WEIBLICH);
 
-        assertNotEquals(c1, c2);
+        assertEquals(c1, c2);
         assertNotEquals(c1, c3);
     }
 
@@ -49,4 +49,12 @@ public class CardTest {
             new Card(null, Geschlecht.MAENNLICH);
         });
     }
+
+    @Test
+    public void testCardEquals() {
+        Card c1 = new Card(Tierart.BÄR,Geschlecht.WEIBLICH);
+        Card c2 = new Card(Tierart.BÄR,Geschlecht.MAENNLICH);
+        assertEquals(c1, c2); // sollte true sein
+    }
+
 }
