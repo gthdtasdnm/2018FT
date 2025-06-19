@@ -9,6 +9,8 @@ public class FullGameTest {
         game.addPlayer("A");
         game.addPlayer("B");
         game.addPlayer("C");
+        game.addPlayer("D");
+        game.addPlayer("E");
 
         game.dealCards();
         SchwarzerPeterAutomaton automaton = new SchwarzerPeterAutomaton(game);
@@ -34,10 +36,11 @@ public class FullGameTest {
         }
 
         // Spielverlauf
-        int i = 0;
+        int i = 1;
         while (!automaton.isFinished() && i < 1000) {
             Player active = game.head();
             automaton.select(active);
+
 
             boolean matched = false;
             for (Card c : active.getHand()) {
@@ -53,6 +56,7 @@ public class FullGameTest {
             }
 
             System.out.println("Runde: " + i + " | Spieler: " + active.getName());
+            System.out.println(active.getHand());
             i++;
         }
 

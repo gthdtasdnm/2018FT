@@ -26,6 +26,11 @@ public class Player {
         hand.remove(c);
     }
 
+    @Override
+    public String toString(){
+        return name;
+    }
+
     public Card removeRandomCard() {
         //da sie karten bereits gemischt auf der hand sind entferne ich die erste
         Card c = hand.getFirst();
