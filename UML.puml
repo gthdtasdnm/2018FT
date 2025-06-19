@@ -1,0 +1,114 @@
+@startuml
+class SchwarzerPeter {
+- List<Player> players
+~ List<Card> deck
++ void addPlayer(String)
++ void dealCards()
++ Player head()
++ List<Card> deck()
++ void nextTurn()
++ Iterator<Player> iterator()
++ List<Player> getPlayerList()
++ void removePlayer(Player)
+}
+
+
+class Main {
++ {static} void main(String[])
+}
+
+class Card {
+- Tierart tierart
+- Geschlecht geschlecht
++ Tierart getTierart()
++ Geschlecht getGeschlecht()
++ String toString()
++ boolean equals(Object)
++ int hashCode()
++ boolean istSchwarzerPeter()
+}
+
+
+enum Tierart {
++  KATZE
++  HUND
++  MAUS
++  AFFE
++  SCHWEIN
++  FROSCH
++  KUH
++  PINGUIN
++  LÖWE
++  ZIEGE
++  BÄR
++  ENTE
++  PFERD
++ boolean istPeter()
++ String toString()
+}
+
+
+class Player {
+- String name
+- List<Card> hand
++ void addCard(Card)
++ List<Card> getHand()
++ String getName()
++ void removeCard(Card)
++ Card removeRandomCard()
+}
+
+
+enum Geschlecht {
++  MAENNLICH
++  WEIBLICH
+- String symbol
++ String getSymbol()
++ String toString()
+}
+
+
+class CardFactory {
++ {static} List<Card> alleKartenErzeugen()
+}
+
+class SchwarzerPeterAutomaton {
+- State PaareFinden
+- State KarteZiehen
+- State Spielende
+- State KarteGezogen
+- State state
+- Card card
+- SchwarzerPeter game
+- List<Player> notReady
+- void setReady(Player)
+- boolean allReady()
++ boolean validMatchingCard(Player,Card)
+- void removeIfEmpty(Player)
+- boolean validPair(Player,Card,Card)
++ Player getLeftNeighbor(Player)
+- void setState(State)
++ boolean isFinished()
++ void entry()
+~ void discard(Player,Card,Card)
+~ void ready(Player)
+~ void select(Player)
+~ void matching(Player,Card)
+~ void noMatch(Player)
+}
+
+
+abstract class SchwarzerPeterAutomaton$State {
+~ {abstract}void entry()
+~ {abstract}void discard(Player,Card,Card)
+~ {abstract}void matching(Player,Card)
+~ {abstract}void ready(Player)
+~ {abstract}void noMatch(Player)
+~ {abstract}void select(Player)
+}
+
+
+
+Iterable <|.. SchwarzerPeter
+SchwarzerPeterAutomaton +.. SchwarzerPeterAutomaton$State
+@enduml
