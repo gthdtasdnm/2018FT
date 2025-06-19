@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +41,6 @@ public class SchwarzerPeter implements Iterable<Player>{
     public void nextTurn(){
         iterator().next();
     }
-
 
 
     @Override

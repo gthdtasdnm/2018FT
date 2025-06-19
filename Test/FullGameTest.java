@@ -13,33 +13,50 @@ public class FullGameTest {
         game.dealCards();
         SchwarzerPeterAutomaton automaton = new SchwarzerPeterAutomaton(game);
 
+        // Anfangspaare ablegen
         for (Player p : game) {
-            for (Card c1 : p.getHand()) {
-                for (Card c2 : p.getHand()) {
-                    if (!c1.equals(c2) && c1.equals(c2)) {
+            boolean[] discarded = new boolean[p.getHand().size()]; // Index-Merker für bereits abgelegte Karten
+            for (int i = 0; i < p.getHand().size(); i++) {
+                if (discarded[i]) continue;
+                Card c1 = p.getHand().get(i);
+                for (int j = i + 1; j < p.getHand().size(); j++) {
+                    if (discarded[j]) continue;
+                    Card c2 = p.getHand().get(j);
+                    if (c1.equals(c2)) {
                         automaton.discard(p, c1, c2);
+                        discarded[i] = true;
+                        discarded[j] = true;
+                        break;
                     }
                 }
             }
             automaton.ready(p);
         }
 
-        while (!automaton.isFinished()) {
+        // Spielverlauf
+        int i = 0;
+        while (!automaton.isFinished() && i < 1000) {
             Player active = game.head();
             automaton.select(active);
 
+            boolean matched = false;
             for (Card c : active.getHand()) {
                 if (automaton.validMatchingCard(active, c)) {
                     automaton.matching(active, c);
+                    matched = true;
                     break;
                 }
             }
 
-            if (game.getPlayerList().equals(active)) {
+            if (!matched) {
                 automaton.noMatch(active);
             }
+
+            System.out.println("Runde: " + i + " | Spieler: " + active.getName());
+            i++;
         }
 
-        assertEquals(1, game.getPlayerList().size());
+        System.out.println("Spiel beendet nach " + i + " Runden.");
+        assertEquals(1, game.getPlayerList().size(), "Am Ende sollte genau ein Spieler übrig bleiben.");
     }
 }
